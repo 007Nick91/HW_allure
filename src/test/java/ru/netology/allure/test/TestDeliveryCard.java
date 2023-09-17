@@ -46,7 +46,7 @@ class TestDeliveryCard {
         $("[data-test-id=date] input").setValue(firstMeetingDate);
         $("[data-test-id=name] input").setValue(validUser.getName());
         $("[data-test-id=phone] input").setValue(validUser.getPhone());
-//        $("[data-test-id=agreement]").click();
+        $("[data-test-id=agreement]").click();
         $(byText("Запланировать")).click();
         $(byText("Успешно!")).shouldBe(Condition.visible,Duration.ofSeconds(15));
         $("[data-test-id=success-notification] .notification__content")
@@ -64,6 +64,31 @@ class TestDeliveryCard {
                 .shouldBe(Condition.visible)
                 .shouldHave(Condition.exactText("Встреча успешно запланирована на " + secondMeetingDate));
 
+
+    }
+    @Test
+    @DisplayName("Should fail")
+    void shouldFail() {
+        DataGenerator.UserInfo validUser = DataGenerator.Registration.generateUser("ru");
+        int daysToAddForFirstMeeting = 3;
+        String firstMeetingDate = DataGenerator.generateDate(daysToAddForFirstMeeting);
+        int daysToAddForSecondMeeting = 36500;
+        String secondMeetingDate = DataGenerator.generateDate(daysToAddForSecondMeeting);
+        $("[data-test-id=city] input").setValue(validUser.getCity());
+        $("[data-test-id=date] input").sendKeys(Keys.chord(Keys.SHIFT, Keys.HOME), Keys.DELETE);
+        $("[data-test-id=date] input").setValue(firstMeetingDate);
+        $("[data-test-id=name] input").setValue(validUser.getName());
+        $("[data-test-id=phone] input").setValue(validUser.getPhone());
+        $("[data-test-id=agreement]").click();
+        $(byText("Запланировать")).click();
+        $(byText("Успешно!")).shouldBe(Condition.visible,Duration.ofSeconds(15));
+        $("[data-test-id=success-notification] .notification__content")
+                .shouldBe(Condition.visible)
+                .shouldHave(Condition.exactText("Встреча успешно запланирована на " + firstMeetingDate));
+        $("[data-test-id=date] input").sendKeys(Keys.chord(Keys.SHIFT, Keys.HOME), Keys.DELETE);
+        $("[data-test-id=date] input").setValue(secondMeetingDate);
+        $(byText("Запланировать")).click();
+        $(byText("Заказ на выбранную дату невозможен")).shouldBe(Condition.visible,Duration.ofSeconds(15));
 
     }
 
